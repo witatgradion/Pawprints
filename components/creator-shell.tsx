@@ -46,10 +46,15 @@ export function CreatorShell({ children, breadcrumb }: { children: React.ReactNo
           </div>
           <div className="mt-3 flex items-center gap-2 px-2">
             <span className="grid size-7 place-items-center rounded-full bg-brand text-[11px] font-semibold text-white">WP</span>
-            <div className="text-[12px] leading-tight">
+            <div className="min-w-0 flex-1 text-[12px] leading-tight">
               <div className="font-medium">Wit P.</div>
-              <div className="text-ink-faint">gradion.com</div>
+              <div className="truncate text-ink-faint">gradion.com</div>
             </div>
+            <a href="/api/auth/logout" title="Sign out" aria-label="Sign out" className="grid size-7 shrink-0 place-items-center rounded-lg text-ink-faint transition-colors hover:bg-paper-sunk hover:text-ink">
+              <svg viewBox="0 0 16 16" fill="none" className="size-4">
+                <path d="M6 14H3V2h3M11 11l3-3-3-3M14 8H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
           </div>
         </div>
       </aside>
