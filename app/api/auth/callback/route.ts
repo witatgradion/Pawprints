@@ -4,7 +4,7 @@ import { SESSION_COOKIE, STATE_COOKIE, SESSION_TTL_MS, emailAllowed, signSession
 export async function GET(req: NextRequest) {
   const url = req.nextUrl;
   const origin = url.origin;
-  const fail = (error: string) => NextResponse.redirect(`${origin}/login?error=${error}`);
+  const fail = (error: string) => NextResponse.redirect(`${origin}/?error=${error}`);
 
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
