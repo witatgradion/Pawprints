@@ -67,7 +67,8 @@ const btnVariant = {
 export function Button({ variant = "primary", size = "md", className, children, ...rest }: ButtonProps) {
   return (
     <button className={cn(btnBase, btnSize[size], btnVariant[variant], className)} {...rest}>
-      {children}
+      {/* the rounded font is ascent-heavy; nudge the label to optical center */}
+      <span className="inline-flex translate-y-px">{children}</span>
     </button>
   );
 }
@@ -87,7 +88,7 @@ export function LinkButton({
 }) {
   return (
     <Link href={href} className={cn(btnBase, btnSize[size], btnVariant[variant ?? "primary"], className)}>
-      {children}
+      <span className="inline-flex translate-y-px">{children}</span>
     </Link>
   );
 }

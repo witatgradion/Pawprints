@@ -23,6 +23,7 @@ export function Recorder({ host = "acme.store" }: { host?: string }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activePathId, setActivePathId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [addPos, setAddPos] = useState<{ top: number; left: number } | null>(null);
   // welcome / thank-you statements shown to the participant before & after the test
   const [welcomeText, setWelcomeText] = useState("");
   const [thankYouText, setThankYouText] = useState("");
@@ -156,7 +157,12 @@ export function Recorder({ host = "acme.store" }: { host?: string }) {
 
           {/* Add block */}
           <button
-            onClick={() => setAddOpen((o) => !o)}
+            onClick={(e) => {
+              if (addOpen) return setAddOpen(false);
+              const r = e.currentTarget.getBoundingClientRect();
+              setAddPos({ top: r.top, left: r.right + 10 });
+              setAddOpen(true);
+            }}
             className={cn(
               "flex items-center gap-2.5 rounded-2xl border border-dashed px-3 py-3 text-left transition-colors",
               addOpen ? "border-brand bg-brand-soft/40" : "border-line-strong hover:border-brand hover:bg-brand-soft/20",
@@ -168,37 +174,6 @@ export function Recorder({ host = "acme.store" }: { host?: string }) {
               <div className="text-[11px] text-ink-faint">Mission, question, rating…</div>
             </div>
           </button>
-
-          {addOpen && (
-            <div className="rounded-2xl border border-line bg-card p-2 shadow-[0_18px_40px_-24px_rgba(255,77,141,0.4)]">
-              <div className="px-2 py-1.5 text-[11px] font-medium text-ink-faint">Choose a block type</div>
-              <button
-                onClick={addMission}
-                className="flex w-full items-center gap-2.5 rounded-xl px-2 py-2 text-left hover:bg-brand-soft/50"
-              >
-                <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
-                  <MissionGlyph className="size-4" />
-                </span>
-                <div>
-                  <div className="text-[13px] font-semibold">Mission</div>
-                  <div className="text-[11px] text-ink-faint">Create a usability task for your testers</div>
-                </div>
-              </button>
-              <div
-                aria-disabled
-                title="Coming soon"
-                className="flex w-full cursor-not-allowed items-center gap-2.5 rounded-xl px-2 py-2 text-left opacity-40"
-              >
-                <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-paper-sunk text-ink-faint">?</span>
-                <div>
-                  <div className="flex items-center gap-1.5 text-[13px] font-semibold">
-                    Yes/No <span className="rounded bg-paper-sunk px-1 text-[9px] font-semibold uppercase text-ink-faint">soon</span>
-                  </div>
-                  <div className="text-[11px] text-ink-faint">Ask a question with a yes / no answer</div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="mt-3">
@@ -365,6 +340,37 @@ export function Recorder({ host = "acme.store" }: { host?: string }) {
           </>
         )}
       </div>
+
+      {/* floating "Choose a block type" popover (fixed → escapes the panel's overflow) */}
+      {addOpen && addPos && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setAddOpen(false)} aria-hidden />
+          <div
+            className="fixed z-50 w-[320px] rounded-2xl border border-line bg-card p-2.5 shadow-[0_30px_70px_-30px_rgba(255,77,141,0.55)]"
+            style={{ top: addPos.top, left: addPos.left }}
+          >
+            <div className="px-2 py-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-faint">Choose a block type</div>
+            <button onClick={addMission} className="flex w-full items-center gap-3 rounded-xl px-2 py-2.5 text-left transition-colors hover:bg-brand-soft/50">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
+                <MissionGlyph className="size-4" />
+              </span>
+              <div>
+                <div className="text-[13px] font-semibold">Mission</div>
+                <div className="text-[12px] leading-snug text-ink-soft">Create a usability task for your testers</div>
+              </div>
+            </button>
+            <div aria-disabled title="Coming soon" className="flex w-full cursor-not-allowed items-center gap-3 rounded-xl px-2 py-2.5 text-left opacity-50">
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-paper-sunk text-ink-faint">?</span>
+              <div>
+                <div className="flex items-center gap-1.5 text-[13px] font-semibold">
+                  Yes/No <span className="rounded bg-paper-sunk px-1.5 text-[9px] font-semibold uppercase tracking-wide text-ink-faint">soon</span>
+                </div>
+                <div className="text-[12px] leading-snug text-ink-soft">Ask a question with a yes / no answer</div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
