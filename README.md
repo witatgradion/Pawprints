@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pawprints — clickable prototype
 
-## Getting Started
+A front-end prototype of the Pawprints usability-testing platform (see `../context.md`).
+Built with Next.js (App Router) + Tailwind v4 + Fredoka/Nunito. **All data is mocked** — there is no
+proxy, database, auth, or AI call. It exists to demonstrate the full experience end to end.
 
-First, run the development server:
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install   # already done
+npm run dev   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What to click
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Route | Screen |
+|---|---|
+| `/` | Landing — the "numbers, not feeling" thesis |
+| `/dashboard` | Creator's tests list |
+| `/tests/new` | Create a test — paste URL + add/reorder scenarios |
+| `/tests/acme-checkout/record` | Happy-path recorder — click the storefront to capture steps |
+| `/tests/acme-checkout/share` | Share / "test is live" confirmation |
+| `/tests/acme-checkout/results` | The report — evidence chips, funnel, heatmap, ranked AI fixes |
+| `/t/acme-checkout` | **Participant runner** — take the test (try the checkout flow) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Design notes
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Evidence chip** (`components/evidence-chip.tsx`) is the signature element: every number
+  ships with its sample size and a to-scale 95% confidence whisker — the product principle made literal.
+- **Dark instrument theme.** Warm near-black surfaces with elevation rising in lightness; a signal
+  **orange (`#FF6B00`)** brand carries every primary action. All surfaces are driven by semantic
+  tokens in `app/globals.css`, so the whole app is themed from one place.
+- The data trio (good / warn / bad) is brightened to **glow against the dark**, and `warn` is a
+  distinct gold so it never gets confused with the orange brand.
+- Geist **Mono** is used for every number, giving the whole UI a measured "instrument" texture.
+- The mock storefront (`components/mock-site.tsx`) stays **light on purpose** — it reads as "the
+  site under test," framed inside the dark instrument chrome; its cart page reproduces the real flaw
+  the report diagnoses (cart icon mistaken for checkout).

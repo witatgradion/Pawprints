@@ -1,26 +1,144 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ════════════════════════════════════════════════════════════
+   EMPATHY — warm & friendly design system
+   The product is named Empathy, so the brand is a glossy heart and
+   a playful pink. Bright warm-white surfaces, rounded shapes, soft
+   tinted shadows, and a data trio in friendly pastels.
+   The mock storefront stays neutral — it is "the site under test."
+   ════════════════════════════════════════════════════════════ */
+@theme {
+  /* surfaces */
+  --color-paper: #fff7f4;        /* warm peachy white */
+  --color-paper-sunk: #ffeef0;   /* soft pink wells / tracks */
+  --color-card: #ffffff;
+
+  /* text — warm plum, never harsh black */
+  --color-ink: #34243a;
+  --color-ink-soft: #7c6a85;
+  --color-ink-faint: #ab9cb4;
+
+  /* hairlines */
+  --color-line: #f6e6e6;
+  --color-line-strong: #efd5d6;
+
+  /* brand — playful pink (the heart) */
+  --color-brand: #ff4d8d;
+  --color-brand-dark: #ec2f74;   /* hover */
+  --color-brand-soft: #ffe6ef;
+  --color-brand-line: #ffc4da;
+
+  /* data trio — friendly pastels, reserved for metrics */
+  --color-good: #12bd8f;
+  --color-good-soft: #d3f6ec;
+  --color-warn: #ff9f1c;
+  --color-warn-soft: #ffedcf;
+  --color-bad: #fb5343;
+  --color-bad-soft: #ffe1dd;
+
+  --font-sans: var(--font-sans-rounded), ui-rounded, system-ui, sans-serif;
+  --font-display: var(--font-display-rounded), ui-rounded, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+
+  --radius: 0.85rem;             /* rounder = friendlier */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-brand);
+    color: #fff;
+  }
+  .tnum {
+    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums;
+  }
+  *:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  /* soft rounded scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-line-strong);
+    border: 3px solid var(--color-paper);
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand-line);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* subtle dotted grid used on hero / empty surfaces */
+.grid-paper {
+  background-image: radial-gradient(rgba(255, 77, 141, 0.12) 1.4px, transparent 1.4px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse 90% 70% at 70% 0%, #000 35%, transparent 80%);
+}
+
+/* warm pink wash for hero / feature surfaces */
+.brand-glow {
+  background:
+    radial-gradient(55% 75% at 85% -10%, rgba(255, 77, 141, 0.22), transparent 60%),
+    radial-gradient(50% 60% at 0% 110%, rgba(255, 159, 28, 0.16), transparent 55%);
+}
+
+/* candy gradient for the brand accent word */
+.brand-text {
+  background: linear-gradient(100deg, #ff7eb0 0%, #ff4d8d 50%, #ff7a3d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* soft tinted elevation for cards on the light theme */
+.card-soft {
+  box-shadow: 0 1px 2px rgba(52, 36, 58, 0.05), 0 14px 34px -22px rgba(255, 77, 141, 0.4);
+}
+
+/* entrance + accents ─────────────────────────────────────────── */
+@keyframes brand-draw {
+  from { stroke-dashoffset: 220; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+.fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+/* gentle bob for the 3D heart */
+@keyframes heart-bob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-2px) rotate(3deg); }
+}
+.heart-bob {
+  animation: heart-bob 2.6s ease-in-out infinite;
+  transform-origin: center 70%;
 }
