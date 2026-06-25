@@ -1,6 +1,7 @@
-import { GoogleG, Logo } from "@/components/ui";
+import { GoogleG, LinkButton, Logo } from "@/components/ui";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import { CatLottie } from "@/components/ui/cat-lottie";
+import { authConfigured } from "@/lib/auth";
 
 const ERRORS: Record<string, string> = {
   domain: "That isn't a gradion.com account. Please sign in with your @gradion.com Google account.",
@@ -50,14 +51,20 @@ export default async function Landing({ searchParams }: { searchParams: Promise<
         )}
 
         <div className="fade-up mt-9" style={{ animationDelay: "0.2s" }}>
-          <a
-            href="/api/auth/login"
-            className="inline-flex h-12 items-center justify-center gap-2.5 rounded-[var(--radius)] border border-line-strong bg-card px-6 text-sm font-semibold text-ink shadow-[0_10px_30px_-12px_rgba(255,77,141,0.5)] transition-colors hover:bg-paper-sunk"
-          >
-            <GoogleG className="size-5" />
-            Continue with Google
-          </a>
-          <p className="mt-3 font-mono text-[11px] text-ink-faint">Limited to gradion.com accounts</p>
+          {authConfigured() ? (
+            <>
+              <a
+                href="/api/auth/login"
+                className="inline-flex h-12 items-center justify-center gap-2.5 rounded-[var(--radius)] border border-line-strong bg-card px-6 text-sm font-semibold text-ink shadow-[0_10px_30px_-12px_rgba(255,77,141,0.5)] transition-colors hover:bg-paper-sunk"
+              >
+                <GoogleG className="size-5" />
+                Continue with Google
+              </a>
+              <p className="mt-3 font-mono text-[11px] text-ink-faint">Limited to gradion.com accounts</p>
+            </>
+          ) : (
+            <LinkButton href="/dashboard">Open the dashboard</LinkButton>
+          )}
         </div>
       </section>
     </div>
