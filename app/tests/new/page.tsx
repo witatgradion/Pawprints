@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CreatorShell, Crumb } from "@/components/creator-shell";
 import { Card, Button, Eyebrow } from "@/components/ui";
+import { slugify, upsertTest } from "@/lib/store";
 import { cn } from "@/lib/cn";
 
 export default function NewTestPage() {
@@ -13,8 +14,14 @@ export default function NewTestPage() {
   const urlValid = /\.\w{2,}/.test(url);
   const ready = urlValid && name.trim();
 
+  function createAndContinue() {
+    const id = slugify(name);
+    upsertTest({ id, name: name.trim(), url, status: "draft", createdAt: Date.now(), scenarios: [] });
+    router.push(`/tests/${id}/record?url=${encodeURIComponent(url)}&name=${encodeURIComponent(name)}`);
+  }
+
   return (
-    <CreatorShell breadcrumb={<Crumb items={[{ label: "Tests", href: "/dashboard" }, { label: "New test" }]} />}>
+    <CreatorShell breadcrumb={<Crumb items={[{ label: "Usability testing", href: "/dashboard" }, { label: "New test" }]} />}>
       <div className="mx-auto max-w-3xl">
         <Eyebrow>Create · step 1 of 3</Eyebrow>
         <h1 className="font-display mt-2 text-3xl font-semibold tracking-normal">Set up a test</h1>
@@ -55,10 +62,7 @@ export default function NewTestPage() {
           <p className="text-[13px] text-ink-faint">
             Next: create scenarios and record each one&apos;s happy path.
           </p>
-          <Button
-            disabled={!ready}
-            onClick={() => router.push(`/tests/acme-checkout/record?url=${encodeURIComponent(url)}`)}
-          >
+          <Button disabled={!ready} onClick={createAndContinue}>
             Continue to scenarios →
           </Button>
         </div>

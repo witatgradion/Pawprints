@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MockSite, type SitePage } from "@/components/mock-site";
 import { nextPage } from "@/lib/site-nav";
+import { getStoredTest, upsertTest } from "@/lib/store";
 import { cn } from "@/lib/cn";
 
 const START: SitePage = "listing";
@@ -18,7 +19,7 @@ const nid = (p: string) => `${p}${uid++}`;
 const newPath = (): Path => ({ id: nid("p"), screens: [START] });
 const newMission = (): Mission => ({ id: nid("m"), task: "", description: "", paths: [newPath()] });
 
-export function Recorder({ host = "acme.store" }: { host?: string }) {
+export function Recorder({ testId, name = "", url = "", host = "acme.store" }: { testId?: string; name?: string; url?: string; host?: string }) {
   const [blocks, setBlocks] = useState<Mission[]>(() => [newMission()]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activePathId, setActivePathId] = useState<string | null>(null);
@@ -39,6 +40,21 @@ export function Recorder({ host = "acme.store" }: { host?: string }) {
   const mission = isSystem ? null : blocks.find((b) => b.id === selKey) ?? blocks[0];
   const activePath = mission ? mission.paths.find((p) => p.id === activePathId) ?? mission.paths[mission.paths.length - 1] : null;
   const page = activePath ? activePath.screens[activePath.screens.length - 1] : START;
+
+  // auto-save the test (and its missions) to the local store as it's built
+  useEffect(() => {
+    if (!testId) return;
+    const existing = getStoredTest(testId);
+    upsertTest({
+      id: testId,
+      name: name || existing?.name || "Untitled test",
+      url: url || existing?.url || "",
+      status: "live",
+      createdAt: existing?.createdAt ?? Date.now(),
+      scenarios: blocks.map((b) => ({ id: b.id, title: b.task.trim() || "Untitled mission", instruction: b.description.trim() || undefined })),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blocks, testId, name, url]);
 
   function patchMission(id: string, patch: Partial<Mission>) {
     setBlocks((bs) => bs.map((b) => (b.id === id ? { ...b, ...patch } : b)));

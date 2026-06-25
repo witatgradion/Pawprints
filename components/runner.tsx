@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MockSite, type SitePage } from "@/components/mock-site";
 import { Logo } from "@/components/ui";
 import { nextPage, happyPath } from "@/lib/site-nav";
 import { getTest, tests } from "@/lib/mock-data";
+import { addSession, getStoredTest } from "@/lib/store";
 import { cn } from "@/lib/cn";
 
 type Phase = "welcome" | "intro" | "task" | "postq" | "thanks";
@@ -13,8 +14,14 @@ type Phase = "welcome" | "intro" | "task" | "postq" | "thanks";
 const giveUpReasons = ["Couldn't find it", "Didn't trust it", "Too many steps", "Thought I was done", "Something else"];
 
 export function Runner({ testId }: { testId: string }) {
-  const test = getTest(testId) ?? tests[0];
-  const scenarios = test.scenarios;
+  const mockTest = getTest(testId) ?? tests[0];
+  const [scenarios, setScenarios] = useState<{ id: string; title: string; instruction?: string }[]>(mockTest.scenarios);
+
+  // prefer the user-created test from the local store, if present
+  useEffect(() => {
+    const stored = getStoredTest(testId);
+    if (stored && stored.scenarios.length) setScenarios(stored.scenarios);
+  }, [testId]);
 
   const [idx, setIdx] = useState(0);
   const [phase, setPhase] = useState<Phase>("welcome");
@@ -28,8 +35,8 @@ export function Runner({ testId }: { testId: string }) {
   // captured metrics per task: time on task, success, misclicks
   const [captured, setCaptured] = useState<{ task: string; outcome: "completed" | "gave_up"; seconds: number; misclicks: number }[]>([]);
 
-  const scenario = scenarios[idx];
-  const tracked = scenario.id.toLowerCase().includes("checkout");
+  const scenario = scenarios[idx] ?? scenarios[0];
+  const tracked = true; // the stand-in site always exposes the checkout happy path
   const totalSteps = happyPath.length;
 
   function resetTask() {
@@ -83,6 +90,13 @@ export function Runner({ testId }: { testId: string }) {
       resetTask();
       setPhase("intro");
     } else {
+      addSession({
+        id: `sess-${Date.now()}-${Math.floor(Math.random() * 1e6)}`,
+        testId,
+        name: name.trim() || "Anonymous",
+        at: Date.now(),
+        tasks: captured.map((c) => ({ title: c.task, outcome: c.outcome, seconds: c.seconds, misclicks: c.misclicks })),
+      });
       setPhase("thanks");
     }
   }

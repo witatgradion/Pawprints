@@ -6,7 +6,7 @@ import { Logo, LinkButton } from "@/components/ui";
 import { cn } from "@/lib/cn";
 
 const nav = [
-  { href: "/dashboard", label: "Tests", icon: GridIcon },
+  { href: "/dashboard", label: "Usability testing", icon: GridIcon },
 ];
 
 export function CreatorShell({ children, breadcrumb }: { children: React.ReactNode; breadcrumb?: React.ReactNode }) {
@@ -69,9 +69,6 @@ export function CreatorShell({ children, breadcrumb }: { children: React.ReactNo
             <span className="hidden min-w-0 truncate md:block">{breadcrumb}</span>
           </div>
           <div className="flex items-center gap-2">
-            <LinkButton href="/t/acme-checkout" variant="secondary" size="sm">
-              Preview as participant
-            </LinkButton>
             <LinkButton href="/tests/new" size="sm">
               + New test
             </LinkButton>
