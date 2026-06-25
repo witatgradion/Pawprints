@@ -77,6 +77,13 @@ export function Recorder({ host = "acme.store" }: { host?: string }) {
     setActivePathId(null);
     setAddOpen(false);
   }
+  function deleteBlock(id: string) {
+    if (blocks.length <= 1) return; // keep at least one mission
+    const remaining = blocks.filter((b) => b.id !== id);
+    setBlocks(remaining);
+    setSelectedId(remaining[0].id);
+    setActivePathId(null);
+  }
 
   return (
     <div
@@ -122,17 +129,27 @@ export function Recorder({ host = "acme.store" }: { host?: string }) {
                 onClick={() => selectBlock(b.id)}
                 onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && selectBlock(b.id)}
                 className={cn(
-                  "flex cursor-pointer items-center gap-2.5 rounded-2xl border bg-card p-3 text-left transition-colors",
+                  "group flex cursor-pointer items-center gap-2.5 rounded-2xl border bg-card p-3 text-left transition-colors",
                   active ? "border-brand ring-2 ring-brand/15" : "border-line hover:border-brand-line",
                 )}
               >
                 <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
                   <MissionGlyph className="size-4" />
                 </span>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="truncate text-[13px] font-semibold">{b.task.trim() || "Block title"}</div>
                   <div className="text-[11px] text-ink-faint">Mission</div>
                 </div>
+                {blocks.length > 1 && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteBlock(b.id); }}
+                    aria-label="Delete block"
+                    title="Delete block"
+                    className="grid size-7 shrink-0 place-items-center rounded-lg text-ink-faint opacity-0 transition hover:bg-bad-soft hover:text-bad focus-visible:opacity-100 group-hover:opacity-100"
+                  >
+                    <TrashGlyph className="size-4" />
+                  </button>
+                )}
               </div>
             );
           })}
@@ -509,6 +526,13 @@ function EnterGlyph({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 16 16" fill="none" className={className}>
       <path d="M6 3h6v10H6M9 8H2m0 0 2.5-2.5M2 8l2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function TrashGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" className={className}>
+      <path d="M2.5 4h11M6 4V2.8c0-.4.3-.8.8-.8h2.4c.5 0 .8.4.8.8V4M12.5 4l-.5 8.4c0 .6-.5 1.1-1.1 1.1H5.1c-.6 0-1.1-.5-1.1-1.1L3.5 4M6.5 7v3.5M9.5 7v3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

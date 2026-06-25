@@ -54,7 +54,7 @@ type ButtonProps = {
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const btnBase =
-  "inline-flex items-center justify-center gap-2 rounded-[var(--radius)] font-medium transition-all duration-150 disabled:opacity-50 disabled:pointer-events-none cursor-pointer whitespace-nowrap active:scale-[0.98]";
+  "inline-flex items-center justify-center gap-2 rounded-[var(--radius)] font-medium leading-none transition-all duration-150 disabled:opacity-50 disabled:pointer-events-none cursor-pointer whitespace-nowrap active:scale-[0.98]";
 const btnSize = { sm: "h-8 px-3 text-[13px]", md: "h-10 px-4 text-sm" };
 const btnVariant = {
   primary:
