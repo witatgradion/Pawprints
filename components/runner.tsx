@@ -13,14 +13,23 @@ type Phase = "welcome" | "intro" | "task" | "postq" | "thanks";
 
 const giveUpReasons = ["Couldn't find it", "Didn't trust it", "Too many steps", "Thought I was done", "Something else"];
 
+function domainOf(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  return url.replace(/^https?:\/\//, "").split("/")[0] || undefined;
+}
+
 export function Runner({ testId }: { testId: string }) {
   const mockTest = getTest(testId) ?? tests[0];
   const [scenarios, setScenarios] = useState<{ id: string; title: string; instruction?: string }[]>(mockTest.scenarios);
+  const [host, setHost] = useState<string | undefined>(() => domainOf(mockTest.targetUrl));
 
   // prefer the user-created test from the local store, if present
   useEffect(() => {
     const stored = getStoredTest(testId);
-    if (stored && stored.scenarios.length) setScenarios(stored.scenarios);
+    if (stored) {
+      if (stored.scenarios.length) setScenarios(stored.scenarios);
+      setHost(domainOf(stored.url));
+    }
   }, [testId]);
 
   const [idx, setIdx] = useState(0);
@@ -105,7 +114,7 @@ export function Runner({ testId }: { testId: string }) {
     <div className="relative h-screen w-screen overflow-hidden bg-paper-sunk">
       {/* the proxied site fills the viewport */}
       <div className="absolute inset-0">
-        <MockSite page={page} onHit={(id) => onHit(id)} onMiss={onMiss} />
+        <MockSite page={page} onHit={(id) => onHit(id)} onMiss={onMiss} host={host} />
       </div>
 
       {/* tiny "powered by" so the participant knows the frame */}
